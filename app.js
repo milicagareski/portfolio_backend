@@ -28,13 +28,14 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post("/contact", (req, res) => {
-  const firstname = req.body.name || "";
-  const email = req.body.email || "";
-  const message = req.body.message || "";
+  const firstname = req.body.name;
+  const email = req.body.email;
+  const message = req.body.message;
 
   const content = fs.readFileSync(
     path.resolve(__dirname, "database/message.json")
   );
+
   const obj = JSON.parse(content.toString());
   obj.push({
     firstname,
@@ -47,15 +48,13 @@ app.post("/contact", (req, res) => {
     JSON.stringify(obj)
   );
 
-  console.log(req.session);
-  const result = "Thank you for contacting me";
-  res.send(result);
+  res.send("Thank you for contacting me");
 });
 
 app.get("/contact", (req, res) => {
   let obj = null;
   let status = 403;
-  if (req.session && req.session.loggedIn) {
+  if (req.session !== undefined && req.session.loggedIn == true) {
     const content = fs.readFileSync(
       path.resolve(__dirname, "database/message.json")
     );
@@ -66,12 +65,11 @@ app.get("/contact", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const username = req.body.username || "";
-  const password = req.body.password || "";
+  const username = req.body.username;
+  const password = req.body.password;
+  let response = false;
 
   if (
-    username &&
-    password &&
     username === "milica" &&
     bcrypt.compareSync(
       password,
@@ -79,14 +77,14 @@ app.post("/login", (req, res) => {
     )
   ) {
     req.session.loggedIn = true;
+    response = req.session.loggedIn;
   }
 
-  res.send(req.session.loggedIn || false);
+  res.send(response);
 });
 
 app.get("/logout", (req, res) => {
   req.session.destroy();
-  console.log(req.session);
   res.send(true);
 });
 
@@ -95,10 +93,6 @@ app.use((req, res, next) => {
   res.send("An Error Ocurred");
 });
 
-app.listen(port, (err) => {
-  if (err) {
-    console.error("Failed to run the server", err);
-  } else {
-    console.log(`Server is running on port ${port}`);
-  }
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
