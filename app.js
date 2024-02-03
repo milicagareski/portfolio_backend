@@ -27,6 +27,10 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.get("/", (req, res) => {
+  res.send("It works");
+});
+
 app.post("/contact", (req, res) => {
   const firstname = req.body.name;
   const email = req.body.email;
