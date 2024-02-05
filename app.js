@@ -96,6 +96,15 @@ app.get("/logout", (req, res) => {
   res.send(true);
 });
 
+app.get("/delete", (req, res) => {
+  let messages = [];
+  fs.writeFileSync(
+    path.resolve(__dirname, "database/message.json"),
+    JSON.stringify(messages)
+  );
+  res.send(messages);
+});
+
 app.use((req, res, next) => {
   res.status(500);
   res.send("An Error Ocurred");
