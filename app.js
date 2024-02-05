@@ -97,12 +97,18 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/delete", (req, res) => {
-  let messages = [];
-  fs.writeFileSync(
-    path.resolve(__dirname, "database/message.json"),
-    JSON.stringify(messages)
-  );
-  res.send(messages);
+  let deleted = false;
+  let status = 403;
+  if (req.session !== undefined && req.session.loggedIn == true) {
+    const messages = [];
+    fs.writeFileSync(
+      path.resolve(__dirname, "database/message.json"),
+      JSON.stringify(messages)
+    );
+    deleted = true;
+    status = 200;
+  }
+  res.status(status).send(deleted);
 });
 
 app.use((req, res, next) => {
